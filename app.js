@@ -14,4 +14,4 @@ app.use((error, req, res, next) => {
     res.status(error.code).json({message: error.message, data: error.data});
 });
 
-app.listen(3000);
+app.listen(3000,()=>console.log('listening on port 3000'));
