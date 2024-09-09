@@ -20,4 +20,10 @@ class User {
     static findById(id) {
         return db.execute('SELECT id FROM users WHERE users.id = ?', [id]);
     }
+
+    static findByUsername(username) {
+        return db.execute('Select username FROM users WHERE users.username = ?', [username]);
+    }
 }
+
+module.exports = User;
