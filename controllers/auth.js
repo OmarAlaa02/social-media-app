@@ -42,5 +42,32 @@ exports.getLogin = (req, res, next) => {
 }
 
 exports.postLogin = (req, res, next) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        const err = new Error('Login failed');
+        err.code = 401;
+        err.data = error.array()[0].msg;
+
+        throw err;
+    }
+
+    User.findByEmail(req.body.email)
+    .then(([result]) => {
+        const token = jwt.sign(
+            {
+                email: req.body.email,
+                userId: result[0].id
+            }, 'somesecret',
+            {expiresIn: '1h'}
+        );
     
+        res.status(200).json({message: 'Successfully logged in', token: token});
+    })
+    .catch((err) => {
+        if (!err.code) {
+            err.code = 500;
+        }
+
+        next(err);
+    });
 }

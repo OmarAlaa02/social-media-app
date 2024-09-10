@@ -21,6 +21,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 
 app.use((error, req, res, next) => {
+    console.log('here');
     console.log(error.code, error.message, error.data);
     if (!error.code || error.code == 500) {
       error.code = 500;

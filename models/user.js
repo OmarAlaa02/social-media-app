@@ -14,15 +14,15 @@ class User {
     }
 
     static findByEmail(email) {
-        return db.execute('SELECT email FROM users WHERE users.email = ?', [email]);
+        return db.execute('SELECT * FROM users WHERE users.email = ?', [email]);
     }
 
     static findById(id) {
-        return db.execute('SELECT id FROM users WHERE users.id = ?', [id]);
+        return db.execute('SELECT * FROM users WHERE users.id = ?', [id]);
     }
 
     static findByUsername(username) {
-        return db.execute('Select username FROM users WHERE users.username = ?', [username]);
+        return db.execute('Select * FROM users WHERE users.username = ?', [username]);
     }
 }
 
