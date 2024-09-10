@@ -43,9 +43,36 @@ exports.createPost = (req, res, next) => {
 }
 
 exports.like = (req, res, next) => {
-    Post.incrementLike(1)
-    .then(([result]) => {
-        console.log(result);
-        res.json({message: 'liked'});
+    const postId = req.params.postId;
+    Post.incrementLike(postId)
+    .then(() => {
+        const like = new Like(req.userId, postId);
+        return like.save()
+    })
+    .then(() => {
+        res.status(201).json({message: 'liked akheran'});
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+}
+
+exports.unlike = (req, res, next) => {
+    const postId = req.params.postId;
+    Post.decrementLike(postId)
+    .then(() => {
+        return Like.findByPostIdAndDelete(postId);
+    })
+    .then(() => {
+        res.status(200).json({message: 'like removed'});
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
     });
 }

@@ -58,7 +58,7 @@ exports.postLogin = (req, res, next) => {
                 email: req.body.email,
                 userId: result[0].id
             }, 'somesecret',
-            {expiresIn: '1h'}
+            {expiresIn: '10h'}
         );
     
         res.status(200).json({message: 'Successfully logged in', token: token});
