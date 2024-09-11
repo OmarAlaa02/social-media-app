@@ -19,8 +19,16 @@ class Post {
     }
 
     static decrementLike(id) {
-        console.log('decrement is called with id = ', id);
         return db.execute('UPDATE posts SET likeCount = likeCount - 1 WHERE posts.id = ?', [id]);
+    }
+
+    static incrementComment(id) {
+        console.log(1);
+        return db.execute('UPDATE posts SET commentCount = commentCount + 1 WHERE posts.id = ?', [id]);
+    }
+
+    static decrementComment(id) {
+        return db.execute('UPDATE posts SET commentCount = commentCount - 1 WHERE posts.id = ?', [id]);
     }
 }
 

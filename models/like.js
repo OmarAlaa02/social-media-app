@@ -11,8 +11,12 @@ class Like {
     }
 
     static findByPostIdAndDelete(id) {
-        console.log('delete like is called with id = ', id);
         return db.execute('DELETE FROM likes WHERE likes.postId = ?', [id]);
+    }
+
+    static getLikesOnPost(postId) {
+        console.log(1);
+        return db.execute('SELECT userId FROM likes WHERE likes.postId = ?', [postId]);
     }
 }
 

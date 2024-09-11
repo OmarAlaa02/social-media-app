@@ -3,6 +3,7 @@ const {validationResult} = require('express-validator');
 const User = require('../models/user');
 const Post = require('../models/post');
 const Like = require('../models/like');
+const Comment = require('../models/comment');
 
 exports.getProfile = (req, res, next) => {
     const userId = req.params.userId;
@@ -42,7 +43,7 @@ exports.createPost = (req, res, next) => {
     })
 }
 
-exports.like = (req, res, next) => {
+exports.likePost = (req, res, next) => {
     const postId = req.params.postId;
     Post.incrementLike(postId)
     .then(() => {
@@ -60,7 +61,7 @@ exports.like = (req, res, next) => {
     });
 }
 
-exports.unlike = (req, res, next) => {
+exports.unlikePost = (req, res, next) => {
     const postId = req.params.postId;
     Post.decrementLike(postId)
     .then(() => {
@@ -68,6 +69,77 @@ exports.unlike = (req, res, next) => {
     })
     .then(() => {
         res.status(200).json({message: 'like removed'});
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+}
+
+exports.getLikes = (req, res, next) => {
+    const postId = req.params.postId;
+
+    Like.getLikesOnPost(postId)
+    .then(([result]) => {
+        res.status(200).json({message: 'likes loaded', likes: result});
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+}
+
+exports.commentOnPost = (req, res, next) => {
+    const userId = req.userId;
+    const postId = req.params.postId;
+    const content = req.body.content;
+    const comment = new Comment(userId, postId, content);
+
+    comment.save()
+    .then(() => {
+        return Post.incrementComment(postId);
+    })
+    .then(() => {
+        res.status(201).json({message: 'Commented Successfully'});
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+}
+
+exports.deleteComment = (req, res, next) => {
+    const commentId = req.params.commentId;
+    const postId = req.params.postId;
+
+    Comment.deleteComment(commentId)
+    .then(() => {
+        return Post.decrementComment(postId);
+    })
+    .then(() => {
+        res.status(200).json({message: 'comment deleted'});
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+}
+
+exports.getComments = (req, res, next) => {
+    const postId = req.params.postId;
+
+    Comment.getCommentsOnPost(postId)
+    .then(([result]) => {
+        console.log(result);
+        res.status(200).json({message: 'Comments loaded!!!', comments: result});
     })
     .catch(err => {
         if (!err.code) {
