@@ -15,7 +15,6 @@ class Like {
     }
 
     static getLikesOnPost(postId) {
-        console.log(1);
         return db.execute('SELECT userId FROM likes WHERE likes.postId = ?', [postId]);
     }
 }

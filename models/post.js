@@ -23,7 +23,6 @@ class Post {
     }
 
     static incrementComment(id) {
-        console.log(1);
         return db.execute('UPDATE posts SET commentCount = commentCount + 1 WHERE posts.id = ?', [id]);
     }
 
