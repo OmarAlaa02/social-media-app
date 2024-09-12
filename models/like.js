@@ -10,8 +10,8 @@ class Like {
         return db.execute('INSERT INTO likes (userId, postId) VALUES (?, ?)', [this.userId, this.postId]);
     }
 
-    static findByPostIdAndDelete(id) {
-        return db.execute('DELETE FROM likes WHERE likes.postId = ?', [id]);
+    static deleteLike(userId,postId) {
+        return db.execute('DELETE FROM likes WHERE likes.postId = ? and likes.userId = ?', [postId, userId]);
     }
 
     static getLikesOnPost(postId) {

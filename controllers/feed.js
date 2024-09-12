@@ -65,7 +65,7 @@ exports.unlikePost = (req, res, next) => {
     const postId = req.params.postId;
     Post.decrementLike(postId)
     .then(() => {
-        return Like.findByPostIdAndDelete(postId);
+        return Like.deleteLike(req.userId,postId);
     })
     .then(() => {
         res.status(200).json({message: 'like removed'});
