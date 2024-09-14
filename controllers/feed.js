@@ -5,7 +5,7 @@ const Post = require('../models/post');
 const Like = require('../models/like');
 const Comment = require('../models/comment');
 const Follow = require('../models/follows');
-
+const Views=require('../models/views');
 exports.getProfile = (req, res, next) => {
     const userId = req.params.userId;
     User.findById(userId)
@@ -178,6 +178,33 @@ exports.deleteFollow=(req,res,next)=>{
         });
     })
     .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+
+}
+
+exports.loadPosts=(req,res,next)=>{
+    const lastPostId=req.body.lastPostId || 0;
+
+    console.log(req.userId,lastPostId);
+
+    //TODO fix this code
+    Views.loadposts(req.userId,lastPostId)
+    .then(async([result])=>{
+        console.log(result);
+        for(let post of result)
+        {
+            const loadedPost= new Views(req.userId,post.id);
+            await loadedPost.save();
+        }
+
+        res.status(200).json({
+            message:'loaded posts succefully'
+        })
+    }).catch(err => {
         if (!err.code) {
             err.code = 500;
         }
