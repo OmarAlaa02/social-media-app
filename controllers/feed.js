@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Post = require('../models/post');
 const Like = require('../models/like');
 const Comment = require('../models/comment');
+const Follow = require('../models/follows');
 
 exports.getProfile = (req, res, next) => {
     const userId = req.params.userId;
@@ -147,4 +148,40 @@ exports.getComments = (req, res, next) => {
         }
         next(err);
     });
+}
+
+exports.postFollow=(req,res,next)=>{
+    const { followingId } = req.body;
+    const follow = new Follow(req.userId,followingId);
+
+    follow.save()
+    .then(()=>{
+        res.status(201).json({
+            message: `User:${req.userId} followed User:${followingId}`
+        })
+        .catch(err => {
+            if (!err.code) {
+                err.code = 500;
+            }
+            next(err);
+        });
+    })
+}
+
+exports.deleteFollow=(req,res,next)=>{
+    const { followingId } = req.body;
+
+    Follow.unFollow(req.userId,followingId)
+    .then(()=>{
+        res.status(200).json({
+            message: `User:${req.userId} unfollowed User:${followingId}`
+        });
+    })
+    .catch(err => {
+        if (!err.code) {
+            err.code = 500;
+        }
+        next(err);
+    });
+
 }

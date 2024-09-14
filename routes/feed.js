@@ -21,4 +21,8 @@ router.delete('/comment/:postId/:commentId', isAuth, feedController.deleteCommen
 
 router.get('/comment/:postId', isAuth, feedController.getComments);
 
+router.post('/follow', isAuth, feedController.postFollow);
+
+router.delete('/unfollow', isAuth, feedController.deleteFollow)
+
 module.exports = router;

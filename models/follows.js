@@ -7,7 +7,7 @@ class Follow {
     }
 
     save() {
-        return db.execute('INSERT INTO follows (userId, followingId) VALUES (?, ?', [userId, followingId]);
+        return db.execute('INSERT INTO follows (userId, followingId) VALUES (?, ?)', [this.userId, this.followingId]);
     }
 
     static getFollowingList(userId) {
@@ -17,4 +17,10 @@ class Follow {
     static getFollowersList(userId) {
         return db.execute('SELECT userId FROM follows WHERE follows.followingId = ?', [userId]);
     }
+
+    static unFollow(userId,followingId){
+        return db.execute('DELETE FROM follows WHERE follows.userId = ? AND follows.followingId = ?',[userId,followingId]);
+    }
 }
+
+module.exports=Follow;
