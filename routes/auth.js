@@ -9,8 +9,6 @@ const isAuth = require('../middleware/is-auth').isAuth;
 
 const router = express.Router();
 
-router.get('/signup', authController.getSignUp);
-
 router.post('/signup', [
     body('username').trim().not().isEmpty().withMessage('Username cannot be empty')
     .custom((value, {req}) => {
@@ -33,7 +31,6 @@ router.post('/signup', [
     body('password').trim().isLength({min : 8}).withMessage('Password Should be of length of minimum 8 excluding spaces')
 ], authController.postSignUp);
 
-router.get('/login', authController.getLogin);
 
 router.post('/login', [
     body('email').isEmail().withMessage('Please Enter a valid Email address')
@@ -57,5 +54,7 @@ router.post('/login', [
         });
     })
 ], authController.postLogin);
+
+router.get('/login', authController.getLogin);
 
 module.exports = router;

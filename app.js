@@ -1,6 +1,7 @@
 const express = require('express');
 
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/auth');
 const feedRoutes = require('./routes/feed');
@@ -8,14 +9,19 @@ const feedRoutes = require('./routes/feed');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
     res.setHeader(
       'Access-Control-Allow-Methods',
       'OPTIONS, GET, POST, PUT, PATCH, DELETE'
     );
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
 });
 

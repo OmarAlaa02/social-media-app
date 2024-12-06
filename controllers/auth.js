@@ -4,10 +4,6 @@ const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 
-exports.getSignUp = (req, res, next) => {
-    res.status(200).json({message: 'Sign up page loaded Succesfully!!!'});
-}
-
 exports.postSignUp = (req, res, next) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
@@ -37,10 +33,6 @@ exports.postSignUp = (req, res, next) => {
     })
 }
 
-exports.getLogin = (req, res, next) => {
-    res.status(200).json({message: 'Login page loaded Succesfully!!!'});
-}
-
 exports.postLogin = (req, res, next) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
@@ -52,22 +44,74 @@ exports.postLogin = (req, res, next) => {
     }
 
     User.findByEmail(req.body.email)
-    .then(([result]) => {
-        const token = jwt.sign(
-            {
-                email: req.body.email,
-                userId: result[0].id
-            }, 'somesecret',
-            {expiresIn: '10h'}
-        );
-    
-        res.status(200).json({message: 'Successfully logged in', token: token});
-    })
-    .catch((err) => {
-        if (!err.code) {
-            err.code = 500;
-        }
+        .then(([result]) => {
+            if (!result.length) {
+                const err = new Error('Invalid email or password');
+                err.code = 401;
+                throw err;
+            }
 
-        next(err);
-    });
+            console.log(result);
+            const token = jwt.sign(
+                {
+                    email: req.body.email,
+                    username: result[0].username,
+                    userId: result[0].id,
+                },
+                'somesecret',
+                { expiresIn: '10h' }
+            );
+
+            res.cookie('token', '', {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'None',
+                maxAge: 0 
+            });
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'None',
+                maxAge: 10 * 60 * 60 * 1000 
+            });
+
+            res.status(200).json({message: "Successfully logged in"});
+        })
+        .catch((err) => {
+            if (!err.code) {
+                err.code = 500;
+            }
+
+            next(err);
+        });
+};
+
+exports.getLogin = (req, res, next) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+        const error = new Error('Token not found');
+        error.code = 401;
+        throw error;
+    }
+
+    let decodedToken;
+    try {
+        decodedToken = jwt.verify(token, 'somesecret');
+    } catch (err) {
+        err.code = 401; 
+        throw err;
+    }
+
+    if (!decodedToken) {
+        const error = new Error('Token not verified');
+        error.code = 401;
+        throw error;
+    }
+
+    res.status(200).json({message: "Authorized",
+        email: decodedToken.email, 
+        userId: decodedToken.userId, 
+        username: decodedToken.username});
 }
