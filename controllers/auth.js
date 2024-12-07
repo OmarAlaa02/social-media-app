@@ -62,13 +62,6 @@ exports.postLogin = (req, res, next) => {
                 { expiresIn: '10h' }
             );
 
-            res.cookie('token', '', {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'None',
-                maxAge: 0 
-            });
-
             res.cookie('token', token, {
                 httpOnly: true,
                 secure: true,
@@ -114,4 +107,15 @@ exports.getLogin = (req, res, next) => {
         email: decodedToken.email, 
         userId: decodedToken.userId, 
         username: decodedToken.username});
+}
+
+exports.postLogout = (req, res, next) => {
+    res.clearCookie('token', {
+        httpOnly: true, 
+        secure: true,    
+        sameSite: 'None',
+        maxAge: 0        
+    });
+
+    res.status(200).json({ message: 'Successfully logged out'});
 }
