@@ -116,6 +116,6 @@ exports.postLogout = (req, res, next) => {
         sameSite: 'None',
         maxAge: 0        
     });
-
+    
     res.status(200).json({ message: 'Successfully logged out'});
 }
