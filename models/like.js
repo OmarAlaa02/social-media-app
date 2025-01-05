@@ -1,22 +1,37 @@
-const db = require('../util/database');
+const db = require("../util/database");
 
 class Like {
-    constructor(userId, postId) {
-        this.userId = userId;
-        this.postId = postId;
-    }
+  constructor(userId, postId) {
+    this.userId = userId;
+    this.postId = postId;
+  }
 
-    save() {
-        return db.execute('INSERT INTO likes (userId, postId) VALUES (?, ?)', [this.userId, this.postId]);
-    }
+  save() {
+    return db.execute("INSERT INTO likes (userId, postId) VALUES (?, ?)", [
+      this.userId,
+      this.postId,
+    ]);
+  }
 
-    static deleteLike(userId,postId) {
-        return db.execute('DELETE FROM likes WHERE likes.postId = ? and likes.userId = ?', [postId, userId]);
-    }
+  static deleteLike(userId, postId) {
+    return db.execute(
+      "DELETE FROM likes WHERE likes.postId = ? and likes.userId = ?",
+      [postId, userId]
+    );
+  }
 
-    static getLikesOnPost(postId) {
-        return db.execute('SELECT userId FROM likes WHERE likes.postId = ?', [postId]);
-    }
+  static getLikesOnPost(postId) {
+    return db.execute("SELECT userId FROM likes WHERE likes.postId = ?", [
+      postId,
+    ]);
+  }
+
+  static checkLike(userId, postId) {
+    return db.execute(
+      "SELECT count(*) FROM likes WHERE likes.postId = ? AND likes.userId = ?",
+      [postId, userId]
+    );
+  }
 }
 
 module.exports = Like;
