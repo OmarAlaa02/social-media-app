@@ -14,6 +14,10 @@ class Post {
         );
     }
 
+    static deletePost(id){
+        return db.execute('DELETE FROM posts WHERE posts.id = ?',[id])
+    }
+
     static incrementLike(id) {
         return db.execute('UPDATE posts SET likeCount = likeCount + 1 WHERE posts.id = ?', [id]);
     }
@@ -28,6 +32,14 @@ class Post {
 
     static decrementComment(id) {
         return db.execute('UPDATE posts SET commentCount = commentCount - 1 WHERE posts.id = ?', [id]);
+    }
+
+    static getProfilePosts(username) {
+        return db.execute('SELECT posts.id, posts.authorId, posts.likeCount, posts.commentCount, posts.description FROM posts JOIN users ON posts.authorId = users.id WHERE users.username = ?', [username]);
+    }
+
+    static getAuthor(postId){
+        return db.execute('SELECT authorId FROM posts WHERE posts.id = ?',[postId]);
     }
 }
 

@@ -21,6 +21,10 @@ class Comment {
         console.log(1);
         return db.execute('SELECT * FROM comments WHERE comments.postId = ?', [postId]);
     }
+
+    static canDelete(commentId){
+        return db.execute('SELECT userId FROM comments WHERE comments.id = ?',[commentId]);
+    }
 }
 
 module.exports = Comment;

@@ -11,6 +11,8 @@ router.get('/:userId', isAuth, feedController.getProfile);
 
 router.post('/postt', isAuth, feedController.createPost);
 
+router.delete('/post/:postId',isAuth ,feedController.deletePost);
+
 router.put('/like/:postId', isAuth, feedController.likePost);
 
 router.put('/unlike/:postId', isAuth, feedController.unlikePost);

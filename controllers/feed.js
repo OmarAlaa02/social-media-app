@@ -106,7 +106,7 @@ exports.commentOnPost = (req, res, next) => {
   const postId = req.params.postId;
   const content = req.body.content;
   const comment = new Comment(userId, postId, content);
-
+  console.log("comment : ", content);
   comment
     .save()
     .then(() => {
@@ -123,9 +123,17 @@ exports.commentOnPost = (req, res, next) => {
     });
 };
 
-exports.deleteComment = (req, res, next) => {
+exports.deleteComment = async (req, res, next) => {
   const commentId = req.params.commentId;
   const postId = req.params.postId;
+
+  const [commentAuthorId] = await Comment.canDelete(commentId);
+  const [postAuthorId] = await Post.getAuthor(postId);
+  if (commentAuthorId[0].userId !== req.userId && postAuthorId[0].authorId !== req.userId) {
+    const err = new Error("You are not authorized to delete this comment");
+    err.code = 403;
+    throw err;
+  }
 
   Comment.deleteComment(commentId)
     .then(() => {
@@ -203,7 +211,7 @@ exports.loadPosts = (req, res, next) => {
   Views.loadposts(req.userId, lastPostId)
     .then(async ([result]) => {
       console.log(result);
-      for (let post of result){ 
+      for (let post of result) {
         const [liked] = await Like.checkLike(req.userId, post.id);
         const isLiked = liked[0]["count(*)"] > 0;
         post.isLiked = isLiked;
@@ -223,3 +231,18 @@ exports.loadPosts = (req, res, next) => {
       next(err);
     });
 };
+
+
+exports.deletePost = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.deletePost(postId)
+    .then(() => {
+      res.status(200).json({ message: "Post deleted" });
+    })
+    .catch((err) => {
+      if (!err.code) {
+        err.code = 500;
+      }
+      next(err);
+    });
+}
