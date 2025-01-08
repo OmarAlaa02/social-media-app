@@ -129,7 +129,10 @@ exports.deleteComment = async (req, res, next) => {
 
   const [commentAuthorId] = await Comment.canDelete(commentId);
   const [postAuthorId] = await Post.getAuthor(postId);
-  if (commentAuthorId[0].userId !== req.userId && postAuthorId[0].authorId !== req.userId) {
+  if (
+    commentAuthorId[0].userId !== req.userId &&
+    postAuthorId[0].authorId !== req.userId
+  ) {
     const err = new Error("You are not authorized to delete this comment");
     err.code = 403;
     throw err;
@@ -166,23 +169,28 @@ exports.getComments = (req, res, next) => {
     });
 };
 
-exports.postFollow = (req, res, next) => {
-  const { followingId } = req.body;
+exports.postFollow = async (req, res, next) => {
+  const { followingName } = req.body;
+  console.log("followingName", followingName);
+  const [result] = await User.findByUsername(followingName);
+
+  const followingId = result[0].id;
+
   const follow = new Follow(req.userId, followingId);
 
-  follow.save().then(() => {
-    res
-      .status(201)
-      .json({
+  follow
+    .save()
+    .then(() => {
+      res.status(201).json({
         message: `User:${req.userId} followed User:${followingId}`,
-      })
-      .catch((err) => {
-        if (!err.code) {
-          err.code = 500;
-        }
-        next(err);
       });
-  });
+    })
+    .catch((err) => {
+      if (!err.code) {
+        err.code = 500;
+      }
+      next(err);
+    });
 };
 
 exports.deleteFollow = (req, res, next) => {
@@ -232,7 +240,6 @@ exports.loadPosts = (req, res, next) => {
     });
 };
 
-
 exports.deletePost = (req, res, next) => {
   const postId = req.params.postId;
   Post.deletePost(postId)
@@ -245,4 +252,4 @@ exports.deletePost = (req, res, next) => {
       }
       next(err);
     });
-}
+};

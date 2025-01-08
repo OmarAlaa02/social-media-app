@@ -1,30 +1,30 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 exports.isAuth = (req, res, next) => {
-    const token = req.cookies.token;
-    if (!token) {
-        const error = new Error('Not Authenticated');
-        error.code = 401;
+  const token = req.cookies.token;
+  if (!token) {
+    const error = new Error("Not Authenticated");
+    error.code = 401;
 
-        throw error;
-    }
+    throw error;
+  }
 
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, 'somesecret');
-    } catch (err) {
-        err.code = 401;
-        throw err;
-    }
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, "somesecret");
+  } catch (err) {
+    err.code = 401;
+    throw err;
+  }
 
-    if (!decodedToken) {
-        const error = new Error('Not Authenticated');
-        error.code = 401;
+  if (!decodedToken) {
+    const error = new Error("Not Authenticated");
+    error.code = 401;
 
-        throw error;
-    }
+    throw error;
+  }
 
-    req.email = decodedToken.email;
-    req.userId = decodedToken.userId;
-    next();
-}
+  req.email = decodedToken.email;
+  req.userId = decodedToken.userId;
+  next();
+};
