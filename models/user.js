@@ -32,8 +32,8 @@ class User {
     return db.execute("UPDATE users set imgUrl = ? where users.id = ? ", [imgUrl,id]);
   }
 
-  static getProfilePicture(username){
-    return db.execute('SELECT users.imgUrl FROM users WHERE users.username = ? ',[username]);
+  static getProfilePicture(id){
+    return db.execute('SELECT users.imgUrl FROM users WHERE users.id = ? ',[id]);
   }
 }
 

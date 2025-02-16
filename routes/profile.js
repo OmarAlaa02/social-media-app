@@ -17,7 +17,7 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-router.get("/posts/:username", isAuth, profileController.getPosts);
+router.get("/posts/:userId", isAuth, profileController.getProfileData);
 
 router.post(
   "/uploadPicture",

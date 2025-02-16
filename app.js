@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+
 const authRoutes = require("./routes/auth");
 const feedRoutes = require("./routes/feed");
 const profileRoutes = require("./routes/profile");
@@ -46,4 +47,12 @@ app.use((error, req, res, next) => {
   res.status(error.code).json({ message: error.message, data: error.data });
 });
 
-app.listen(3000, () => console.log("listening on port 3000"));
+function startServer() {
+  const server = app.listen(3000, () => console.log("listening on port 3000"));
+  const io = require("./socket").init(server);
+  io.on("connection", (socket) => {
+    console.log(`user connected with socketid ${socket.id}`);
+  });
+}
+
+startServer();

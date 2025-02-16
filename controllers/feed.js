@@ -6,6 +6,7 @@ const Like = require("../models/like");
 const Comment = require("../models/comment");
 const Follow = require("../models/follows");
 const Views = require("../models/views");
+
 exports.getProfile = (req, res, next) => {
   const userId = req.params.userId;
   User.findById(userId)
@@ -170,12 +171,8 @@ exports.getComments = (req, res, next) => {
 };
 
 exports.postFollow = async (req, res, next) => {
-  const { followingName } = req.body;
-  console.log("followingName", followingName);
-  const [result] = await User.findByUsername(followingName);
-
-  const followingId = result[0].id;
-
+  const { followingId } = req.body;
+  
   const follow = new Follow(req.userId, followingId);
 
   follow
@@ -193,7 +190,7 @@ exports.postFollow = async (req, res, next) => {
     });
 };
 
-exports.deleteFollow = (req, res, next) => {
+exports.  deleteFollow = (req, res, next) => {
   const { followingId } = req.body;
 
   Follow.unFollow(req.userId, followingId)

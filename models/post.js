@@ -34,8 +34,8 @@ class Post {
         return db.execute('UPDATE posts SET commentCount = commentCount - 1 WHERE posts.id = ?', [id]);
     }
 
-    static getProfilePosts(username) {
-        return db.execute('SELECT posts.id, posts.authorId, posts.likeCount, posts.commentCount, posts.description FROM posts JOIN users ON posts.authorId = users.id WHERE users.username = ?', [username]);
+    static getProfilePosts(id) {
+        return db.execute('SELECT posts.id, posts.authorId, posts.likeCount, posts.commentCount, posts.description FROM posts WHERE posts.authorId = ? ', [id]);
     }
 
     static getAuthor(postId){

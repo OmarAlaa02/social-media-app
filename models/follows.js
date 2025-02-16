@@ -14,6 +14,10 @@ class Follow {
         return db.execute('SELECT followingId FROM follows WHERE follows.userId = ?', [userId]);
     }
 
+    static checkFollow(userId,followingId){
+        return db.execute('SELECT count(*) FROM follows WHERE follows.userId = ? AND follows.followingId = ?',[userId,followingId]);
+    }
+
     static getFollowersList(userId) {
         return db.execute('SELECT userId FROM follows WHERE follows.followingId = ?', [userId]);
     }
