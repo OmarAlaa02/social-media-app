@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 
 const authRoutes = require("./routes/auth");
+const chatRoutes = require("./routes/chat");
 const feedRoutes = require("./routes/feed");
 const profileRoutes = require("./routes/profile");
 
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 
 app.use("/auth", authRoutes);
 app.use("/feed", feedRoutes);
+app.use("/chat", chatRoutes);
 app.use("/profile", profileRoutes);
 
 // app.use('/', (req, res, next) => {
