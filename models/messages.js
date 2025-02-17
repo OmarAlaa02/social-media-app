@@ -29,6 +29,14 @@ class messages {
       [userId, otherId, otherId, userId]
     );
   }
+
+  static getChat(myId, userId) {
+    console.log("aa");
+    return db.execute(
+      "SELECT * FROM messages WHERE (senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?)",
+      [myId, userId, userId, myId]
+    );
+  }
 }
 
 module.exports = messages;

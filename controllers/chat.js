@@ -1,4 +1,4 @@
-const messages = require("../models/messages");
+const Messages = require("../models/messages");
 const redisClient = require("../redis");
 
 exports.getChats = async (req, res, next) => {
@@ -7,7 +7,7 @@ exports.getChats = async (req, res, next) => {
   const userId = 2;
   if (!searchQuery) {
     //following
-    const [chats] = await messages.getChats(userId);
+    const [chats] = await Messages.getChats(userId);
     const lastMessagesPromises = [];
     for (let user of chats) {
       const first = Math.min(userId, user.id);
@@ -21,7 +21,7 @@ exports.getChats = async (req, res, next) => {
     for (let i = 0; i < lastMessages.length; i++) {
       if (!lastMessages[i]) {
         //ask DB
-        DBpromises.push(messages.getLastMessage(userId, chats[i].id));
+        DBpromises.push(Messages.getLastMessage(userId, chats[i].id));
       }
     }
     const DBresults = await Promise.all(DBpromises);
@@ -29,8 +29,21 @@ exports.getChats = async (req, res, next) => {
     res.json({ chats, lastMessages, DBresults });
   } else {
     //searching
-    const [users] = await messages.getUsers(searchQuery);
+    const [users] = await Messages.getUsers(searchQuery);
 
     res.json(users);
+  }
+};
+
+exports.getChat = async (req, res, next) => {
+  const myId = req.userId;
+  const userId = req.params.userId;
+
+  try {
+    const messages = await Messages.getChat(myId, userId);
+    console.log(messages);
+    res.status(200).json({ messages: messages[0] });
+  } catch (err) {
+    throw new Error("Can't get Chat");
   }
 };
