@@ -8,4 +8,6 @@ router.get("/getChats", chatController.getChats);
 
 router.get("/getChat/:userId", isAuth, chatController.getChat);
 
+router.post("/sendMessage/:userId", chatController.send);
+
 module.exports = router;

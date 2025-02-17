@@ -8,6 +8,10 @@ class messages {
     this.createdAt = createdAt;
   }
 
+  save() {
+    return db.execute("INSERT INTO messages (senderId, receiverId, content, createdAt) VALUES (?, ?, ?, ?)", [this.senderId, this.recieverId, this.content, this.createdAt]);
+  }
+
   static getChats(userId) {
     // const followersQuery =
     return db.execute(

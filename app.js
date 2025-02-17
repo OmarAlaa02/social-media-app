@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+const redisClient = require('./redis');
 
 const authRoutes = require("./routes/auth");
 const chatRoutes = require("./routes/chat");
@@ -54,6 +55,12 @@ function startServer() {
   const server = app.listen(3000, () => console.log("listening on port 3000"));
   const io = require("./socket").init(server);
   io.on("connection", (socket) => {
+    //update redis
+    const userId = socket.handshake.query.userId;
+    if (!userId)
+      return;
+    redisClient.set(userId, socket.id);
+    console.log(userId, socket.id);
     console.log(`user connected with socketid ${socket.id}`);
   });
 }

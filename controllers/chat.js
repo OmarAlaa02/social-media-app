@@ -1,5 +1,6 @@
 const Messages = require("../models/messages");
 const redisClient = require("../redis");
+const IO = require('../socket');
 
 exports.getChats = async (req, res, next) => {
   const searchQuery = req.query.query;
@@ -46,4 +47,20 @@ exports.getChat = async (req, res, next) => {
   } catch (err) {
     throw new Error("Can't get Chat");
   }
+};
+
+exports.send = async (req, res, next) => {
+    console.log("in send controller");
+    const message = req.body.message;
+    const myId = 9;
+    const userId = 3; //req.params.userId
+    const userSocketId = await redisClient.get(userId);
+    const io = IO.getIO();
+
+    if (userSocketId)
+        io.to(userSocketId).emit("newMessage", {message});
+
+    const msg = new Messages(myId, userId, message, new Date().toISOString().slice(0, 19).replace('T', ' '));
+    await msg.save();
+    res.json({message: "Sent Successfully"});
 };
