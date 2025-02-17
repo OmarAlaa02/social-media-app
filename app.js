@@ -7,6 +7,7 @@ const path = require("path");
 const authRoutes = require("./routes/auth");
 const feedRoutes = require("./routes/feed");
 const profileRoutes = require("./routes/profile");
+const chatRoutes = require("./routes/chat");
 
 const app = express();
 
@@ -31,6 +32,8 @@ app.use((req, res, next) => {
 app.use("/auth", authRoutes);
 app.use("/feed", feedRoutes);
 app.use("/profile", profileRoutes);
+app.use("/chatt", chatRoutes);
+
 
 // app.use('/', (req, res, next) => {
 //    res.status(404).json({message: 'Page Not found'});
