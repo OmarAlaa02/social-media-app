@@ -1,3 +1,10 @@
-const obj = {};
+const arr = [1,2,3];
 
-module.exports = obj;
+for(const num of arr)
+{
+    
+    console.log(num);
+}
+
+
+console.log(arr);

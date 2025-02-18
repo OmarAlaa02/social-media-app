@@ -1,19 +1,20 @@
 const Messages = require("../models/messages");
 const redisClient = require("../redis");
-const IO = require('../socket');
+const IO = require("../socket");
 
 exports.getChats = async (req, res, next) => {
   const searchQuery = req.query.query;
   //get from req.userId after returning isAuth
-  const userId = 2;
+  const userId = req.userId;
   if (!searchQuery) {
     //following
     const [chats] = await Messages.getChats(userId);
     const lastMessagesPromises = [];
-    for (let user of chats) {
-      const first = Math.min(userId, user.id);
-      const second = Math.max(userId, user.id);
+    for (let i = 0; i < chats.length; i++) {
+      const first = Math.min(userId, chats[i].id);
+      const second = Math.max(userId, chats[i].id);
       lastMessagesPromises.push(redisClient.get([first, second]));
+      chats[i].lastmessage = "bye";
     }
 
     const lastMessages = await Promise.all(lastMessagesPromises);
@@ -27,7 +28,7 @@ exports.getChats = async (req, res, next) => {
     }
     const DBresults = await Promise.all(DBpromises);
 
-    res.json({ chats, lastMessages, DBresults });
+    res.json({ chats });
   } else {
     //searching
     const [users] = await Messages.getUsers(searchQuery);
@@ -50,17 +51,21 @@ exports.getChat = async (req, res, next) => {
 };
 
 exports.send = async (req, res, next) => {
-    console.log("in send controller");
-    const message = req.body.message;
-    const myId = 9;
-    const userId = 3; //req.params.userId
-    const userSocketId = await redisClient.get(userId);
-    const io = IO.getIO();
+  console.log("in send controller");
+  const message = req.body.message;
+  const myId = req.userId;
+  const userId = req.params.userId;
+  const userSocketId = await redisClient.get(userId);
+  const io = IO.getIO();
 
-    if (userSocketId)
-        io.to(userSocketId).emit("newMessage", {message});
+  if (userSocketId) io.to(userSocketId).emit("newMessage", { message });
 
-    const msg = new Messages(myId, userId, message, new Date().toISOString().slice(0, 19).replace('T', ' '));
-    await msg.save();
-    res.json({message: "Sent Successfully"});
+  const msg = new Messages(
+    myId,
+    userId,
+    message,
+    new Date().toISOString().slice(0, 19).replace("T", " ")
+  );
+  await msg.save();
+  res.json({ message: "Sent Successfully" });
 };

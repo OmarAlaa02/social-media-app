@@ -9,7 +9,10 @@ class messages {
   }
 
   save() {
-    return db.execute("INSERT INTO messages (senderId, receiverId, content, createdAt) VALUES (?, ?, ?, ?)", [this.senderId, this.recieverId, this.content, this.createdAt]);
+    return db.execute(
+      "INSERT INTO messages (senderId, receiverId, content, createdAt) VALUES (?, ?, ?, ?)",
+      [this.senderId, this.recieverId, this.content, this.createdAt]
+    );
   }
 
   static getChats(userId) {
@@ -22,7 +25,7 @@ class messages {
 
   static getUsers(query) {
     return db.execute(
-      "SELECT * FROM users WHERE username LIKE CONCAT('%',?,'%')",
+      "SELECT id,username,imgUrl FROM users WHERE username LIKE CONCAT('%',?,'%')",
       [query]
     );
   }
