@@ -55,17 +55,25 @@ exports.send = async (req, res, next) => {
   const message = req.body.message;
   const myId = req.userId;
   const userId = req.params.userId;
+  console.log(myId, userId, message);
   const userSocketId = await redisClient.get(userId);
+  const mySocketId = await redisClient.get(myId);
   const io = IO.getIO();
+  const dateTime = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-  if (userSocketId) io.to(userSocketId).emit("newMessage", { message });
+  const sentMsgObj = {
+    senderId: myId,
+    receiverId: userId,
+    content: message,
+    createdAt: dateTime,
+  };
 
-  const msg = new Messages(
-    myId,
-    userId,
-    message,
-    new Date().toISOString().slice(0, 19).replace("T", " ")
-  );
+  if (userSocketId) {
+    io.to(userSocketId).emit("newMessage", { sentMsgObj });
+    io.to(mySocketId).emit("newMessage", { sentMsgObj });
+  }
+  const msg = new Messages(myId, userId, message, dateTime);
+
   await msg.save();
   res.json({ message: "Sent Successfully" });
 };
