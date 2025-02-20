@@ -80,7 +80,7 @@ exports.postLogin = (req, res, next) => {
         });
 };
 
-exports.getLogin = (req, res, next) => {
+exports.getLogin = async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
@@ -103,10 +103,15 @@ exports.getLogin = (req, res, next) => {
         throw error;
     }
 
+    const imgUrlResult = await User.getProfilePicture(decodedToken.userId);
+    const imgUrl = imgUrlResult[0][0]?.imgUrl;
+    const formattedImgUrl = imgUrl ? imgUrl.replace(/\\/g, '/') : null;
+
     res.status(200).json({message: "Authorized",
         email: decodedToken.email, 
         userId: decodedToken.userId, 
-        username: decodedToken.username});
+        username: decodedToken.username,
+        imgUrl: formattedImgUrl});
 }
 
 exports.postLogout = (req, res, next) => {

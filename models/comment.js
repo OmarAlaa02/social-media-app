@@ -19,7 +19,13 @@ class Comment {
 
     static getCommentsOnPost(postId) {
         console.log(1);
-        return db.execute('SELECT * FROM comments WHERE comments.postId = ?', [postId]);
+        return db.execute(`
+            SELECT comments.*, users.username, users.imgUrl 
+            FROM comments 
+            JOIN users ON comments.userId = users.id 
+            WHERE comments.postId = ?`, 
+            [postId]
+        );
     }
 
     static canDelete(commentId){

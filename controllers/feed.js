@@ -215,7 +215,6 @@ exports.loadPosts = (req, res, next) => {
   //TODO fix this code
   Views.loadposts(req.userId, lastPostId)
     .then(async ([result]) => {
-      console.log(result);
       for (let post of result) {
         const [liked] = await Like.checkLike(req.userId, post.id);
         const isLiked = liked[0]["count(*)"] > 0;
@@ -223,6 +222,8 @@ exports.loadPosts = (req, res, next) => {
         //     const loadedPost= new Views(req.userId,post.id);
         //     await loadedPost.save();
       }
+
+      console.log(result);
 
       res.status(200).json({
         message: "loaded posts succefully",
