@@ -84,9 +84,8 @@ exports.getLogin = async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-        const error = new Error('Token not found');
-        error.code = 401;
-        throw error;
+        res.status(200).json({message: "Not Logged In"});
+        return;
     }
 
     let decodedToken;

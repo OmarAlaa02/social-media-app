@@ -23,10 +23,10 @@ class messages {
     );
   }
 
-  static getUsers(query) {
+  static getUsers(query = "") {
     return db.execute(
-      "SELECT id,username,imgUrl FROM users WHERE username LIKE CONCAT('%',?,'%')",
-      [query]
+      "SELECT id, username, imgUrl FROM users WHERE LOWER(username) LIKE LOWER(CONCAT('%', ?, '%'))",
+      [query || ""]
     );
   }
 

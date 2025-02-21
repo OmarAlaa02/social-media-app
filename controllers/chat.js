@@ -31,9 +31,9 @@ exports.getChats = async (req, res, next) => {
     res.json({ chats });
   } else {
     //searching
-    const [users] = await Messages.getUsers(searchQuery);
+    const [chats] = await Messages.getUsers(searchQuery);
 
-    res.json(users);
+    res.json({ chats });
   }
 };
 
@@ -68,10 +68,9 @@ exports.send = async (req, res, next) => {
     createdAt: dateTime,
   };
 
-  if (userSocketId) {
-    io.to(userSocketId).emit("newMessage", { sentMsgObj });
-    io.to(mySocketId).emit("newMessage", { sentMsgObj });
-  }
+  io.to(userSocketId).emit("newMessage", { sentMsgObj });
+  io.to(mySocketId).emit("newMessage", { sentMsgObj });
+  
   const msg = new Messages(myId, userId, message, dateTime);
 
   await msg.save();
